@@ -6,7 +6,17 @@
 
 
 
+class Plane{
+public:
 
+
+	float A;
+	float B;
+	float C;
+	float D;
+	
+
+};
 
 
 

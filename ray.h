@@ -3,7 +3,7 @@
 
 using namespace std;
 
-extern *objectArray[];
+
 class Ray
 {
 
