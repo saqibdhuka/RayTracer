@@ -1,4 +1,4 @@
-// #include <GL/glew.h>
+#include <GL/glew.h>
 #include <GL/gl.h>
 #include <GL/freeglut.h>
 #include <GL/glut.h>
@@ -8,11 +8,17 @@
 #include <time.h>
 #include "Angel.h"
 #include "ray.h"
+#include "plane.h"
+#include "sphere.h"
 
-using namespace std;
 
 #define WINDOW 400
 #define FOVY 45
+
+Sphere sph_objects[1000];
+Plane pla_objects[1000];
+
+Light light_object[1000];
 
 
 

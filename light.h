@@ -1,5 +1,6 @@
-#ifndef RAY_H
-#define RAY_H
+#ifndef LIGHT_H
+#define LIGHT_H
+
 #include <GL/glew.h>
 #include <GL/gl.h>
 #include <GL/freeglut.h>
@@ -10,21 +11,22 @@
 #include <time.h>
 #include "Angel.h"
 
+class Light{
 
+public:
 
-class Ray
-{
+	vec3 point;
+	vec3 colorIntensity;
 
-	public:
-
-		
-		vec3 origin;
-		vec3 direction;
-
-		Ray();
-		Ray(vec3 o, vec3 d);
-		
+	Light();
+	Light(vec3 p, vec3 c);
 	
+	
+	
+
 };
+
+
+
 
 #endif

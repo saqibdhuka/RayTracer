@@ -1,16 +1,5 @@
 
-
-all: RayTracer
-
-RayTracer: main.o ray.o
-	g++ -o RayTracer main.o ray.o -lGL -lGLU -lglut -lX11 -lm -lrt
-
-main.o: main.cpp ray.h Angel.h
-	g++ -c main.cpp
-ray.o: ray.cpp ray.h Angel.h
-	g++ -c ray.cpp
-
+all: main.cpp ray.cpp plane.cpp sphere.cpp light.cpp
+	g++ -o RayTracer main.cpp ray.cpp plane.cpp sphere.cpp light.cpp -lGL -lGLEW -lGLU -lglut -lX11 -lm -lrt
 clean:
-	rm RayTracer main.o ray.o
-
-
+	rm RayTracer main.o ray.o sphere.o plane.o
