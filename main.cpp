@@ -23,8 +23,8 @@ Light light_object[1000];
 
 
 void render(){
-	for(int x=0; x < WINDOW; x++){
-		for (int y = 0; y < WINDOW; y++)
+	for(float x=-tan(FOVY/2); x < tan(FOVY/2); x++){
+		for (float y = -tan(FOVY/2); y < tan(FOVY/2); y++)
 		{
 			vec3 orig(0.0, 0.0, 0.0);
 			vec3 dir(x, y, -1.0);
