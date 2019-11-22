@@ -11,6 +11,7 @@
 #include <math.h>
 #include <time.h>
 #include "Angel.h"
+#include "ray.h"
 
 class Sphere
 {
@@ -32,7 +33,10 @@ public:
 
 	Sphere();
 	Sphere(vec3 point, float rad, Material newMat);
+	vec3 getkdColor();
 	void draw();
+	bool insersect(const Ray &ray, float &t);
+	vec3 get_normal(vec3 rayOrigin);
 };
 
 

@@ -23,6 +23,7 @@ class Ray
 
 		Ray();
 		Ray(vec3 o, vec3 d);
+		void shootRay(const float &t);
 		
 	
 };

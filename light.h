@@ -10,20 +10,18 @@
 #include <math.h>
 #include <time.h>
 #include "Angel.h"
+#include "ray.h"
 
 class Light{
 
 public:
 
-	vec3 point;
+	Ray ray;
 	vec3 colorIntensity;
 
 	Light();
-	Light(vec3 p, vec3 c);
+	Light(Ray rayObj, vec3 c);
 	
-	
-	
-
 };
 
 

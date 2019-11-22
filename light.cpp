@@ -7,12 +7,17 @@
 #include <math.h>
 #include <time.h>
 #include "Angel.h"
+#include "light.h"
 
 
 Light :: Light(){
-	point.x = 0.0;
-	point.y = 0.0;
-	point.z = 0.0;
+	ray.origin.x = 0.0;
+	ray.origin.y = 0.0;
+	ray.origin.z = 0.0;
+
+	ray.direction.x = 0.0;
+	ray.direction.y = 0.0;
+	ray.direction.z = -1.0;
 
 	colorIntensity.x = 0.0;
 	colorIntensity.y = 0.0;
@@ -21,13 +26,11 @@ Light :: Light(){
 }
 
 
-Light :: Light(vec3 p, vec3 c){
-	point.x = p.x;
-	point.y = p.y;
-	point.z = p.z;
-
+Light :: Light(Ray rayObj, vec3 c){
+	ray = rayObj;
 	colorIntensity.x = c.x;
 	colorIntensity.y = c.y;
 	colorIntensity.z = c.z;
 
 }
+

@@ -10,25 +10,50 @@
 #include "ray.h"
 #include "plane.h"
 #include "sphere.h"
+#include "light.h"
 
 
 #define WINDOW 400
 #define FOVY 45
+#define zNear 0.1f
+#define zFar 100.0f
 
-Sphere sph_objects[1000];
-Plane pla_objects[1000];
+float t = 100.0; //t for the use of Ray
 
-Light light_object[1000];
+const float LIMIT = tan(FOVY/2);
+
+Sphere sph_objects[100];
+Plane pla_objects[100];
+
+Light light_object[100];
+
+vec3 shading(Ray ray, Sphere sphere){
+
+	vec3 color(1.0, 0.0, 1.0);
+
+	if(sphere.insersect(ray, t)){
+		vec3 V = ray.direction;
+		vec3 P = ray.origin + V * t;
+		vec3 N = sphere.get_normal(P);
+
+		float ratio = dot(N,V);
+
+		color = sphere.getkdColor() * (ratio *0.5);
+	}
+
+	return color;
 
 
+}
 
 void render(){
-	for(float x=-tan(FOVY/2); x < tan(FOVY/2); x++){
-		for (float y = -tan(FOVY/2); y < tan(FOVY/2); y++)
+	for(float x=-LIMIT; x < LIMIT; x++){
+		for (float y = -LIMIT; y < LIMIT; y++)
 		{
 			vec3 orig(0.0, 0.0, 0.0);
 			vec3 dir(x, y, -1.0);
 			Ray ray(orig, dir);
+			ray.shootRay(t);
 		}
 	}
 }
@@ -40,7 +65,7 @@ void init(){
 	glEnable(GL_DEPTH_TEST);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	gluPerspective((float) FOVY, 1.0f, 0.1f, 100.0f);
+	gluPerspective((float) FOVY, 1.0f, zNear, zFar);
 	glMatrixMode(GL_MODELVIEW);
 	// gluLookAt(0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
 	// glOrtho(-100.0, 100.0, -100.0,100.0,-5.0,20.0);
@@ -55,17 +80,10 @@ void callbackDisplay() {
 	glMatrixMode(GL_MODELVIEW);
 
 	// glPushMatrix();
-	
-	glTranslatef(0.0, 0.0, -5.0);
-	glBegin(GL_TRIANGLES);
-	glColor3f(1.0,0.0,0.0);
-	    glVertex3f(0.0, 0.0, 0.0);
-	    glVertex3f(1.0, 0.0, 0.0);
-	    glVertex3f(0.5, 1.0, 0.0);
-	glEnd();
+		
 	// glPopMatrix();
 
-	glutSwapBuffers();
+	
 
 }
 
@@ -83,6 +101,9 @@ int main(int argc, char **argv) {
 	init();
 	// register callbacks
 	glutDisplayFunc(callbackDisplay);
+
+	
+
 	render();
 
 	// glutSpecialFunc(specialKeyboard);
@@ -90,7 +111,7 @@ int main(int argc, char **argv) {
     // glutMouseFunc( mouse );
 
 	// enter GLUT event processing cycle
-
+	glutSwapBuffers();
 	glutMainLoop();
 	return 0;
 }

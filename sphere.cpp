@@ -55,5 +55,39 @@ Sphere:: Sphere(vec3 point, float rad, Material newMat){
 }
 
 void Sphere :: draw(){
+	glutSolidSphere(radius, 20.0, 50.0);
+}
+
+
+vec3 Sphere::getkdColor(){
+	return mat.kdColor;
+}
+
+bool Sphere :: insersect(const Ray &ray, float &t){
+
+	vec3 p_to_c = ray.origin - center;
+	float a = dot(ray.direction, ray.direction);
+	float b = 2.0 * dot(p_to_c, ray.direction);
+	float c = dot(p_to_c, p_to_c) - radius * radius;
+	float discriminant = (b * b) - (4 * a * c); // b^2 - 4ac
+
+	float t1 = (-b - sqrt(discriminant)) / (2*a);
+	float t2 = (-b - sqrt(discriminant)) / (2*a);
+
+	if(t1 < t2)
+		t = t1;
+	else
+		t = t2;
 	
+	if(discriminant < 0 )
+		return false;
+	else
+		return true;
+
+
+}
+
+vec3 Sphere :: get_normal(vec3 rayOrigin){
+
+	return (rayOrigin - center) * (-1/(radius));
 }
