@@ -95,5 +95,9 @@ float Sphere :: intersect(const Ray &ray){
 
 vec3 Sphere :: get_normal(vec3 rayOrigin){
 
-	return (rayOrigin - center) * (-1/(radius));
+	vec3 rc(rayOrigin - center);
+
+	rc = normalize(rc);
+
+	return rc;
 }
