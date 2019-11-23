@@ -51,6 +51,15 @@ Plane :: Plane (float a, float b, float c, float d, Material newMat){
 	newMat.refraction = matPlane.refraction;
 }
 
+vec3 Plane :: plane_normal(){
+	vec3 N;
+	N.x = A;
+	N.y = B;
+	N.z = C;
+
+	return N;
+
+}
 
 void Plane::draw(){
 	

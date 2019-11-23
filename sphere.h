@@ -13,18 +13,24 @@
 #include "Angel.h"
 #include "ray.h"
 
+#ifndef MATERIALSTRUCTURE_H
+#define MATERIALSTRUCTURE_H
+
+#include "materialStructure.h"
+
+#endif
 class Sphere
 {
 public:
-
-
-	struct Material{
-		vec3 kdColor;
-		vec3 ksColor;	
-		float specular;
-		float reflection;
-		float refraction;
-	};
+	
+	// int count;
+	// struct Material {
+	// 	vec3 kdColor;
+	// 	vec3 ksColor;	
+	// 	float specular;
+	// 	float reflection;
+	// 	float refraction;
+	// };
 	
 	vec3 center;
 	float radius;
@@ -35,7 +41,7 @@ public:
 	Sphere(vec3 point, float rad, Material newMat);
 	vec3 getkdColor();
 	void draw();
-	bool insersect(const Ray &ray, float &t);
+	float intersect(const Ray &ray);
 	vec3 get_normal(vec3 rayOrigin);
 };
 

@@ -11,17 +11,25 @@
 #include <time.h>
 #include "Angel.h"
 
+#ifndef MATERIALSTRUCTURE_H
+#define MATERIALSTRUCTURE_H
+
+#include "materialStructure.h"
+
+#endif
+
+
 class Plane{
 
 public:
 
-	struct Material{
-		vec3 kdColor;
-		vec3 ksColor;	
-		float specular;
-		float reflection;
-		float refraction;
-	};
+	// struct Material{
+	// 	vec3 kdColor;
+	// 	vec3 ksColor;	
+	// 	float specular;
+	// 	float reflection;
+	// 	float refraction;
+	// };
 
 	float A;
 	float B;
@@ -31,7 +39,9 @@ public:
 
 	Plane();
 	Plane(float a, float b, float c, float d, Material newMat);
+	vec3 plane_normal();
 	void draw();
+	bool intersectPlane();
 	
 	
 	

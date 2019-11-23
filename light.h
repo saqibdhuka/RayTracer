@@ -16,11 +16,11 @@ class Light{
 
 public:
 
-	Ray ray;
+	vec3 origin;
 	vec3 colorIntensity;
 
 	Light();
-	Light(Ray rayObj, vec3 c);
+	Light(vec3 position, vec3 c);
 	
 };
 

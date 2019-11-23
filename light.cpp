@@ -11,23 +11,22 @@
 
 
 Light :: Light(){
-	ray.origin.x = 0.0;
-	ray.origin.y = 0.0;
-	ray.origin.z = 0.0;
+	origin.x = 0.0;
+	origin.y = 0.0;
+	origin.z = 0.0;
 
-	ray.direction.x = 0.0;
-	ray.direction.y = 0.0;
-	ray.direction.z = -1.0;
-
-	colorIntensity.x = 0.0;
-	colorIntensity.y = 0.0;
-	colorIntensity.z = 0.0;
+	colorIntensity.x = 2.5;
+	colorIntensity.y = 2.5;
+	colorIntensity.z = 2.5;
 
 }
 
 
-Light :: Light(Ray rayObj, vec3 c){
-	ray = rayObj;
+Light :: Light(vec3 position, vec3 c){
+	origin.x = position.x;
+	origin.y = position.y;
+	origin.z = position.z;
+	
 	colorIntensity.x = c.x;
 	colorIntensity.y = c.y;
 	colorIntensity.z = c.z;
