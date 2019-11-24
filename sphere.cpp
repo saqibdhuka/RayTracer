@@ -30,6 +30,7 @@ Sphere :: Sphere(){
 	mat.specular = 0.0;
 	mat.reflection = 0.0;
 	mat.refraction = 0.0;
+	mat.index_refraction = 1.5;
 	// count =0;
 
 	
@@ -54,6 +55,7 @@ Sphere:: Sphere(vec3 point, float rad, Material newMat){
 	mat.specular = newMat.specular;
 	mat.reflection = newMat.reflection;
 	mat.refraction = newMat.refraction;
+	mat.index_refraction = newMat.index_refraction;
 }
 void Sphere :: draw(){
 	glColor3f(mat.kdColor.x, mat.kdColor.y, mat.kdColor.z);

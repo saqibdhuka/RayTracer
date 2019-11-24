@@ -6,7 +6,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
-
+#include "Angel.h"
 
 
 
@@ -16,4 +16,11 @@ struct Material{
 		int specular;//q
 		float reflection;//kr
 		float refraction;//kt
+		float index_refraction;
+
+		Material(){}
+
+		Material(vec3 kd, vec3 ks, int q, float refl, float refr, float index) :
+		kdColor(kd), ksColor(ks), specular(q), reflection(refl), refraction(refr), index_refraction(index){} 
+		
 };

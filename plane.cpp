@@ -10,7 +10,6 @@
 #include "Angel.h"
 
 
-
 Plane :: Plane(){
 	A = 0.0;
 	B = 0.0;
@@ -28,6 +27,7 @@ Plane :: Plane(){
 	matPlane.specular = 0.0;
 	matPlane.reflection = 0.0;
 	matPlane.refraction = 0.0;
+	matPlane.index_refraction = 1.5;
 }
 
 Plane :: Plane (float a, float b, float c, float d, Material newMat){
@@ -38,17 +38,19 @@ Plane :: Plane (float a, float b, float c, float d, Material newMat){
 	D = d;
 
 
-	newMat.kdColor.x = matPlane.kdColor.x;
-	newMat.kdColor.y = matPlane.kdColor.y;
-	newMat.kdColor.z = matPlane.kdColor.z;
+	matPlane.kdColor.x = newMat.kdColor.x;
+	matPlane.kdColor.y = newMat.kdColor.y;
+	matPlane.kdColor.z = newMat.kdColor.z;
 
-	newMat.ksColor.x = matPlane.ksColor.x;
-	newMat.ksColor.y = matPlane.ksColor.y;
-	newMat.ksColor.z = matPlane.ksColor.z;
+	matPlane.ksColor.x = newMat.ksColor.x;
+	matPlane.ksColor.y = newMat.ksColor.y;
+	matPlane.ksColor.z = newMat.ksColor.z;
 
-	newMat.specular = matPlane.specular;
-	newMat.reflection = matPlane.reflection;
-	newMat.refraction = matPlane.refraction;
+	matPlane.specular = newMat.specular;
+	matPlane.reflection = newMat.reflection;
+	matPlane.refraction = newMat.refraction;
+	matPlane.index_refraction = newMat.index_refraction;
+
 }
 
 vec3 Plane :: plane_normal(){
@@ -61,10 +63,20 @@ vec3 Plane :: plane_normal(){
 
 }
 
-void Plane::draw(){
-	
+
+float Plane :: intersectPlane(Ray &ray){
+
+	vec3 normal = plane_normal();
+	vec3 point = ray.origin;
+	vec3 dir= ray.direction;
+	float t;
+
+	t = (dot(normal,ray.origin) + D) / dot(normal,ray.direction);
+	if(t > 0){
+		return t;
+	}else{
+		return -1;
+	}
+
 }
 
-
-
-using namespace std;

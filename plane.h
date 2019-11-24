@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <time.h>
+#include "ray.h"
 #include "Angel.h"
 
 #ifndef MATERIALSTRUCTURE_H
@@ -40,8 +41,7 @@ public:
 	Plane();
 	Plane(float a, float b, float c, float d, Material newMat);
 	vec3 plane_normal();
-	void draw();
-	bool intersectPlane();
+	float intersectPlane(Ray &ray);
 	
 	
 	
