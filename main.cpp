@@ -43,7 +43,7 @@ const float LIMIT = tan(FOVY/2);
 
 
 
-Sphere sph_objects[2];
+Sphere sph_objects[3];
 Plane pla_objects[1];
 
 Light light_object[4];
@@ -311,25 +311,27 @@ void render(){
 			// if(tP >0)
 			vec2 T = minT(ray);
 			t = T.x;
-			if(t!=-1)
-				printf("t: %f\n",t);
+			// if(t!=-1)
+				// printf("t: %f\n",t);
 			int index = T.y;
-			printf("Index: %d\n",index);
+			// printf("Index: %d\n",index);
 			// t = sph_objects[0].intersect(ray);
 			if(index != -1){
 					countS++;
 					vec3 colorLight = trace(ray, sph_objects[index], light_object[0]);
 					glColor3f(colorLight.x, colorLight.y, colorLight.z);
+					printf("  R: %f,  G: %f,  B: %f\n", colorLight.x, colorLight.y, colorLight.z);
 						
 					glBegin(GL_POINTS);
-						glVertex3f(ray.origin.x + t*ray.direction.x , 
-							ray.origin.y + t*ray.direction.y , 
-							ray.origin.z + t*ray.direction.z );
+						glVertex3f(ray.origin.x + t*ray.direction.x, 
+							ray.origin.y + t*ray.direction.y, 
+							ray.origin.z + t*ray.direction.z);
 					glEnd();
 					// glutSwapBuffers();
 
-			}else{
+			}else if(index <0){
 				t = pla_objects[0].intersectPlane(ray);
+				// printf("t: %f\n",t);
 
 				// printf("Plane t: %f\n", t);
 				countP++;
@@ -338,7 +340,7 @@ void render(){
 				glColor3f(colorLight.x, colorLight.y, colorLight.z);
 				// glEnable(GL_CULL_FACE);
 				// glCullFace(GL_FRONT);
-				glPushMatrix();
+				
 					// glTranslatef(0.0, 0.0, 0.046);
 					
 					glBegin(GL_POINTS);
@@ -346,8 +348,8 @@ void render(){
 							ray.origin.y + t*ray.direction.y , 
 							ray.origin.z + t*ray.direction.z );
 					glEnd();
-				glPopMatrix();
-				// glutSwapBuffers();
+				
+				// glFlush();
 				
 			}
 			// for(int i =0 ; i< 2; i++){
@@ -508,11 +510,11 @@ void callbackDisplay() {
 	
 // glPopMatrix();
 	vec3 center_ball1(-1.0, 0.5, -20.0);
-	vec3 center_ball2(-2.0,-1.0,-15.0);
+	vec3 center_ball2(-3.0,1.5,-20.0);
 	vec3 center_ball3(1.0, 1.0, -15.0);
 
 	float radius_ball1 = 1.5;
-	float radius_ball2 = 1.0;
+	float radius_ball2 = 2.0;
 	float radius_ball3 = 2.0;
 
 	//Setting up the material
