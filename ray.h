@@ -1,6 +1,5 @@
 #ifndef RAY_H
 #define RAY_H
-#include <GL/glew.h>
 #include <GL/gl.h>
 #include <GL/freeglut.h>
 #include <GL/glut.h>
@@ -17,15 +16,15 @@ class Ray
 
 	public:
 
-		
+
 		vec3 origin;
 		vec3 direction;
 
 		Ray();
 		Ray(vec3 o, vec3 d);
 		void shootRay(const float &t);
-		
-	
+
+
 };
 
 #endif

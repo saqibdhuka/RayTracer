@@ -105,7 +105,7 @@ struct vec2 {
 
 	return *this;
     }
-	
+
     //
     //  --- Insertion and Extraction Operators ---
     //
@@ -216,6 +216,10 @@ struct vec3 {
 	return *this * r;
     }
 
+
+    vec3 operator / (const vec3 v) const {
+      return vec3(x/v.x, y/v.y, z/v.z);
+    }
     //
     //  --- (modifying) Arithematic Operators ---
     //
@@ -245,7 +249,7 @@ struct vec3 {
 
 	return *this;
     }
-	
+
     //
     //  --- Insertion and Extraction Operators ---
     //
@@ -399,7 +403,7 @@ struct vec4 {
 
 	return *this;
     }
-	
+
     //
     //  --- Insertion and Extraction Operators ---
     //
@@ -456,4 +460,3 @@ vec3 cross(const vec4& a, const vec4& b )
 }  // namespace Angel
 
 #endif // __ANGEL_VEC_H__
-

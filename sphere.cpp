@@ -1,5 +1,4 @@
 #include "sphere.h"
-#include <GL/glew.h>
 #include <GL/gl.h>
 #include <GL/freeglut.h>
 #include <GL/glut.h>
@@ -18,7 +17,7 @@ Sphere :: Sphere(){
 	center.z = 0.0;
 
 	radius = 0.0;
-	
+
 	mat.kdColor.x = 0.0;
 	mat.kdColor.y = 0.0;
 	mat.kdColor.z = 0.0;
@@ -33,7 +32,7 @@ Sphere :: Sphere(){
 	mat.index_refraction = 1.5;
 	// count =0;
 
-	
+
 }
 
 Sphere:: Sphere(vec3 point, float rad, Material newMat){
@@ -43,7 +42,7 @@ Sphere:: Sphere(vec3 point, float rad, Material newMat){
 	center.z = point.z;
 
 	radius = rad;
-	
+
 	mat.kdColor.x = newMat.kdColor.x;
 	mat.kdColor.y = newMat.kdColor.y;
 	mat.kdColor.z = newMat.kdColor.z;
@@ -83,7 +82,7 @@ float Sphere :: intersect(const Ray &ray){
 		t = t1;
 	else
 		t = t2;
-	
+
 	if(discriminant < 0 ){
 		return -1;
 	}
@@ -95,11 +94,9 @@ float Sphere :: intersect(const Ray &ray){
 
 }
 
-vec3 Sphere :: get_normal(vec3 rayOrigin){
+vec3 Sphere :: get_normal(vec3 point){
 
-	vec3 rc(rayOrigin - center);
-
-	rc = normalize(rc);
+	vec3 rc(point - center);
 
 	return rc;
 }

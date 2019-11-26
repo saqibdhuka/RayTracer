@@ -1,4 +1,3 @@
-#include <GL/glew.h>
 #include <GL/gl.h>
 #include <GL/freeglut.h>
 #include <GL/glut.h>
@@ -26,7 +25,7 @@
 #define WINDOW 400
 #define FOVY 45
 #define zNear 0.1f
-#define zFar 50.0f
+#define zFar 100.0f
 
 
 
@@ -36,36 +35,24 @@ float t;
 float tP; //t for the use of Ray
 
 float xN, yN;
-int rayDepth=1;
+int rayDepth=4;
 vec3 backColor(0.0, 0.0, 0.0);
 
-const float LIMIT = tan(FOVY/2);
+const float LIMIT = tan(DegreesToRadians *FOVY/2)/WINDOW;
 
-
+int countS =0;
+int countP =0;
+float tArray[3] = {500, 500, 500};//Array of t
 
 Sphere sph_objects[3];
 Plane pla_objects[1];
 
 Light light_object[4];
 
-// vec3 shadingSphere(Ray ray, Sphere sphere){
 
-// 	vec3 color(1.0, 0.0, 0.0);
-
-// 	if(sphere.intersect(ray, t)){
-// 		vec3 V = ray.direction;
-// 		vec3 P = ray.origin + V * t;
-// 		vec3 N = sphere.get_normal(P);
-
-// 		float ratio = dot(N,V);
-
-// 		color = sphere.getkdColor() * (ratio *0.5);
-// 	}
-
-// 	return color;
-
-
-// }
+void setRayDepth(int depth){
+	rayDepth = depth;
+}
 
 vec3 vecPow(vec3 v, float power){
 
@@ -74,207 +61,198 @@ vec3 vecPow(vec3 v, float power){
 	for(int i =2; i < power; i++){
 		ans *= v;
 	}
-	// ans.x = pow((float)v.x, power);
-	// ans.y = pow((float)v.y, power);
-	// ans.z = pow((float)v.z, power);
-	// printf("answer.x:%f, answer.y:%f, answer.z:%f \n", ans.x, ans.y, ans.z);
+
 	return ans;
-	// return vec3(pow(v.x, power), pow(v.y, power), pow(v.z, power));
 }
 
+vec3 Ir(0,0,0);
+vec3 It(0,0,0);
+vec3 I_plane = backColor; //Light Intesity to calculate
 
-vec3 tracePlane(Ray ray, Plane plane, Light light){ //Work on this
+vec3 tracePlane(Ray ray, Plane plane, Light light, int depth){ //Work on this
 
-	vec3 I; //Light Intesity to calculate
-	if(rayDepth = 0){
-		return backColor;
+	if(depth == 0){
+		return (I_plane);
+		// return normalize(I);
 	}else{
 		if(yN > yN/2){
 			return backColor;
 		}
-		// printf("Inside rayDepth > 0\n\n");
-		// printf("Ia.x:%f, Ia.y:%f, Ia.z:%f \n", Ia.x, Ia.y, Ia.z);
+
 		vec3 kd = plane.matPlane.kdColor;
-		// printf("kd.x:%f, kd.y:%f, kd.z:%f \n", kd.x, kd.y, kd.z);
 		vec3 Ii = light.colorIntensity;
-		vec3 Ia =  kd * Ii;
+		// float ambientStrength = 0.75f;
 		vec3 ks = plane.matPlane.ksColor;
+		// vec3 Ia =  Ii *ks;
 		float  kr = plane.matPlane.reflection;
+		vec3 Ia =  Ii *kr;
 		float kt = plane.matPlane.refraction;
 		int q = plane.matPlane.specular;
 		float S =1;
 		vec3 intersectionPoint = (ray.origin + (t * ray.direction));
-		vec3 V = normalize(intersectionPoint);
+		vec3 V = normalize(ray.origin - intersectionPoint);
 		vec3 N = normalize(plane.plane_normal());
 		vec3 Li = normalize(intersectionPoint - light_object[0].origin);
-		vec3 R = normalize(2*((N * Li)*N) - Li);
-
-		// printf("R.x:%f, R.y:%f, R.z:%f \n", R.x, R.y, R.z);
-
-		vec3 rv = R*V;
-		// printf("rv.x:%f, rv.y:%f, rv.z:%f \n", rv.x, rv.y, rv.z);
-
-		vec3 tmp = vecPow(rv, q);
-		// printf("tmp.x:%f, tmp.y:%f, tmp.z:%f \n", tmp.x, tmp.y, tmp.z);
-		
+		vec3 R = normalize(((2*N)*(dot(N,V))) - V);
+		float rv = dot(R,V);
+		if(rv < 0){
+			rv =0;
+		}
+		float tmp = pow(rv, q);
 		vec3 ik = Ia * kd;
-		// printf("ik.x:%f, ik.y:%f, ik.z:%f \n", ik.x, ik.y, ik.z);
 		vec3 ktemp = ks * tmp;
-		// printf("ktemp.x:%f, ktemp.y:%f, ktemp.z:%f \n", ktemp.x, ktemp.y, ktemp.z);
-		vec3  knl = kd*N*Li;
-		// printf("knl.x:%f, knl.y:%f, knl.z:%f \n", knl.x, knl.y, knl.z);
-		vec3 sum = S*Ii*(knl + ktemp);
-		// printf("sum.x:%f, sum.y:%f, sum.z:%f \n", sum.x, sum.y, sum.z);
+		float knl = dot((kd*N),Li);
+		if(knl < 0){
+			knl = 0;
+		}
+		vec3 sum = S*Ii*(vec3(knl + ktemp.x, knl + ktemp.y, knl + ktemp.z));
+		// vec3 Ir = 0;
+		// vec3 It = 0;
 
-		I = ik + sum;
-		// printf("I.x:%f, I.y:%f, I.z:%f \n", I.x, I.y, I.z);
-		// if(I.x > 1.0)
-		// 	I.x = 1.0;
-		// if(I.y > 1.0)
-		// 	I.y = 1.0;
-		// if(I.z > 1.0)
-		// 	I.z = 1.0;
-		return normalize(I);
+
+		// I_planes = ik + (sum);
+
+		I_plane = ik + (Ir * kr) + (It * kt) + (sum);
+		vec3 Ir = normalize(I_plane);//Reflected Ray Direction
+		vec3 It = normalize(I_plane); //Refracted Ray Direction
+		vec3 incidentRayVector = intersectionPoint - ray.origin;
+		// vec3 reflectDir = ((2*N)*(dot(N,V))) - V;
+		float tmpDiv = length(N) / length(incidentRayVector);
+		float theta1 = acos(DegreesToRadians * tmpDiv);
+		float refraction_index_air = 1.00029;
+		float ratio = refraction_index_air / plane.matPlane.index_refraction; //n1/n2
+		float c1 = cos(DegreesToRadians*theta1);
+		float c2 = sqrt(1-(pow(ratio,2)*(pow(sin(DegreesToRadians*theta1), 2))));
+		// float temp = ratio * sin(DegreesToRadians * theta1);
+		// float theta2 = asin(temp);
+		vec3 refractDir = ratio * incidentRayVector + (ratio*c1 - c2)*N;
+		Ray ray2(intersectionPoint, R);
+		Ray ray3(intersectionPoint, refractDir);
+
+		return tracePlane(ray2, plane, light, depth-1);
+		return tracePlane(ray3, plane, light, depth-1);
+		// for(int i = depth; i >= 1; i--){
+		// 	I_plane = ik + (Ir * kr) + (It * kt) + (sum);
+		// 	vec3 Ir = I_plane;//Reflected Ray Direction
+		// 	vec3 It = I_plane; //Refracted Ray Direction
+		// }
+		// I_plane+=0.3;
+		// return normalize(I_plane);
+		// return tracePlane(ray, plane, light, depth-1);
+
 	}
 
 }
 
-vec3 trace(Ray ray, Sphere sphere, Light light){ //Sphere Trace 
+vec3 I = backColor; //Light Intesity to calculate
 
-	vec3 I; //Light Intesity to calculate
-	if(rayDepth = 0){
-		return backColor;
+
+vec3 trace(Ray ray, Sphere sphere, Light light, int depth){ //Sphere Trace
+
+
+	if(depth == 0){
+		return (I);
+		// printf("Ix: %f,  Iy: %f,  Iz: %f\n", I.x, I.y, I.z);
+		// return normalize(I);
 	}else{
-		// printf("Inside rayDepth > 0\n\n");
-		// printf("Ia.x:%f, Ia.y:%f, Ia.z:%f \n", Ia.x, Ia.y, Ia.z);
 		vec3 kd = sphere.mat.kdColor;
-		// printf("kd.x:%f, kd.y:%f, kd.z:%f \n", kd.x, kd.y, kd.z);
 		vec3 Ii = light.colorIntensity;
-		vec3 Ia =  kd * Ii;
+		// float ambientStrength = 0.75f;
 		vec3 ks = sphere.mat.ksColor;
+		// vec3 Ia =  Ii *ks;
 		float  kr = sphere.mat.reflection;
 		float kt = sphere.mat.refraction;
+		vec3 Ia =  Ii *kr;
 		int q = sphere.mat.specular;
 		float S =1;
-		vec3 intersectionPoint = ray.origin + (t * ray.direction);
-		vec3 V = normalize(intersectionPoint);
+		vec3 intersectionPoint = (ray.origin + (t * ray.direction));
+		vec3 V = normalize(ray.origin - intersectionPoint);
 		vec3 N = normalize(sphere.get_normal(intersectionPoint));
 		vec3 Li = normalize(intersectionPoint - light_object[0].origin);
-		vec3 R = normalize(2*((N * Li)*N) - Li);
-		
-
-		// printf("R.x:%f, R.y:%f, R.z:%f \n", R.x, R.y, R.z);
-
-		vec3 rv = R*V;
-		// printf("rv.x:%f, rv.y:%f, rv.z:%f \n", rv.x, rv.y, rv.z);
-
-		vec3 tmp = vecPow(rv, q);
-		// printf("tmp.x:%f, tmp.y:%f, tmp.z:%f \n", tmp.x, tmp.y, tmp.z);
-		
+		vec3 R = normalize(((2*N)*(dot(N,V))) - V);
+		float rv = dot(R,V);
+		if(rv < 0){
+			rv =0;
+		}
+		float tmp = pow(rv, q);
 		vec3 ik = Ia * kd;
-		// printf("ik.x:%f, ik.y:%f, ik.z:%f \n", ik.x, ik.y, ik.z);
 		vec3 ktemp = ks * tmp;
-		// printf("ktemp.x:%f, ktemp.y:%f, ktemp.z:%f \n", ktemp.x, ktemp.y, ktemp.z);
-		vec3  knl = kd*N*Li;
-		// printf("knl.x:%f, knl.y:%f, knl.z:%f \n", knl.x, knl.y, knl.z);
-		vec3 sum = S*Ii*(knl + ktemp);
-		I = ik + sum;
-		// printf("I.x:%f, I.y:%f, I.z:%f \n", I.x, I.y, I.z);
-		// if(I.x > 1.0)
-		// 	I.x = 1.0;
-		// if(I.y > 1.0)
-		// 	I.y = 1.0;
-		// if(I.z > 1.0)
-		// 	I.z = 1.0;
-		return normalize(I);
+		float knl = dot(kd*N,Li);
+		if(knl < 0){
+			knl = 0;
+		}
+		vec3 sum = S*Ii*(vec3(knl + ktemp.x, knl + ktemp.y, knl + ktemp.z));
+		// vec3 Ir = 0;
+		// vec3 It = 0;
+
+
+		// I_planes = ik + (sum);
+
+		I = ik + (Ir * kr) + (It * kt) + (sum);
+		vec3 Ir = normalize(I);//Reflected Ray Direction
+		vec3 It = normalize(I); //Refracted Ray Direction
+		vec3 incidentRayVector = intersectionPoint - ray.origin;
+		// vec3 reflectDir = ((2*N)*(dot(N,V))) - V;
+		float tmpDiv = length(N) / length(incidentRayVector);
+		float theta1 = acos(DegreesToRadians * tmpDiv);
+		float refraction_index_air = 1.00029;
+		float ratio = refraction_index_air / sphere.mat.index_refraction; //n1/n2
+		float c1 = cos(DegreesToRadians*theta1);
+		float c2 = sqrt(1-(pow(ratio,2)*(pow(sin(DegreesToRadians*theta1), 2))));
+		// float temp = ratio * sin(DegreesToRadians * theta1);
+		// float theta2 = asin(temp);
+		vec3 refractDir = ratio * incidentRayVector + (ratio*c1 - c2)*N;
+		Ray ray2(intersectionPoint, R);
+		Ray ray3(intersectionPoint, refractDir);
+
+		return trace(ray2, sphere, light, depth-1);
+		return trace(ray3, sphere, light, depth-1);
+		// for(int i = depth; i >= 1; i--){
+		// 	I = ik + (Ir * kr) + (It * kt) + (sum);
+		// 	vec3 Ir = I;//Reflected Ray Direction
+		// 	vec3 It = I; //Refracted Ray Direction
+		// }
+
+
+		// printf("Ix: %f,  Iy: %f,  Iz: %f\n", I.x, I.y, I.z);
+
+
+		// return normalize(I);
+		// return trace(ray, sphere, light, depth-1);
 	}
 
 }
-
-
-// vec3 shadingPlane(Ray ray, Plane plane){
-
-// 	vec3 color(0.5, 0.5, 0.5);
-
-// 	if(plane.intersect(ray, t)){
-// 		vec3 V = ray.direction;
-// 		vec3 P = ray.origin + V * t;
-// 		vec3 N = plane.get_normal(P);
-
-// 		float ratio = dot(N,V);
-
-// 		color = sphere.getkdColor() * (ratio *0.5);
-// 	}
-
-// 	return color;
-
-
-// }
-
-int sizeSphere(Sphere sphere[]){
-	int count=0;
-	for(int i=0; i< 4; i++){
-		if(sphere[i].radius > 0)
-			count++;
-	}
-
-	return count;
-}
-
-int countS =0;
-int countP =0;
-float tArray[3] = {500, 500, 500};//Array of t
 
 vec2 minT(Ray ray){
 
 	vec2 min(10000,-1);//min[MinTValue, Index]
-	for(int i=0; i < 3;i++){
-		
+	for(int i=0; i < 3 ;i++){
 		tArray[i] = sph_objects[i].intersect(ray);
 		if(tArray[i] != -1 && tArray < min){
 			min.x = tArray[i];
 			min.y = i;
 		}
-		// if(tArray[i] != -1)
-		// 	printf("tArray[%d]: %f\n", i,tArray[i] );
-		// if(tArray[i] < 0)
-		// 	tArray[i] = 500;
+		// float tPlane = pla_objects[0].intersectPlane(ray);
+		// if(tPlane < tArray[i] && tPlane != -1){
+		// 	min.x = tPlane;
+		// 	min.y = -1;
+		// }
+
 	}
-	// if(tArray[4] > 0)
-	// 	tArray[4] = 500;
-
-	// float min = tArray[0];
-	// for(int k=0; k < 3; k++){
-	// 	if(tArray[k] == -1){
-	// 		min = tArray[k+1];
-	// 		continue;
-	// 	}
-	// 	if(tArray[k] < min){
-	// 		min = tArray[k];
-	// 	}
-	// }
-
 	return min;
 
 }
 
-// float minTindex(float tCheck){
-// 	for(int i =0; i<3; i++){
-// 		if(tArray[i] == tCheck)
-// 			return i;
-// 	}
-// }
-
 void render(){
 
-	float scale = 26.3;
+	float scale = 2;
 
 	for(int x=-WINDOW/2; x < WINDOW/2; x++){
-		 xN=x * LIMIT* LIMIT*scale;
-		// printf("xN: %f\n", xN); 
+		 xN=x * LIMIT*scale;
+		// printf("xN: %f\n", xN);
 		for (int y = -WINDOW/2; y < WINDOW/2; y++)
 		{
-			 yN=y * LIMIT* LIMIT*scale;			// glBegin(GL_POINTS);
+			 yN=y * LIMIT*scale;			// glBegin(GL_POINTS);
 			// 	glVertex3f(xN, yN, -1.0);
 			// glEnd();
 
@@ -282,33 +260,6 @@ void render(){
 			vec3 dir(xN, yN, -1.0);
 			Ray ray(orig, dir);
 
-			// glColor3f(0.0,0.0,0.0);
-			// 
-			// glColor3f(1.0,0.0,0.0);
-			// glBegin(GL_POINTS);
-			// 	glVertex3f(xN, yN, -50);
-			// glEnd();
-			// // ray.shootRay(t);
-			// if(y < y/2){
-			// 	t = sph_objects[0].intersect(ray);
-			// 	sphereHit = 1;
-			// }else{
-			
-			// tP = pla_objects[0].intersectPlane(ray);
-
-			// if(sph_objects[0].intersect(ray) < pla_objects[0].intersectPlane(ray)){
-			// 	t = sph_objects[0].intersect(ray); 
-			// 	sphereHit = 1;
-			// }else{
-			// 	t = pla_objects[0].intersectPlane(ray);
-			// }
-			// }
-			// t = tS < tP ? tS : tP;
-			
-			// count++;
-			// if(tS >0)
-			// 	printf("ts: %f\n",tS);
-			// if(tP >0)
 			vec2 T = minT(ray);
 			t = T.x;
 			// if(t!=-1)
@@ -318,153 +269,31 @@ void render(){
 			// t = sph_objects[0].intersect(ray);
 			if(index != -1){
 					countS++;
-					vec3 colorLight = trace(ray, sph_objects[index], light_object[0]);
+					vec3 colorLight = trace(ray, sph_objects[index], light_object[0], rayDepth);
 					glColor3f(colorLight.x, colorLight.y, colorLight.z);
-					printf("  R: %f,  G: %f,  B: %f\n", colorLight.x, colorLight.y, colorLight.z);
-						
+					// printf("  R: %f,  G: %f,  B: %f\n", colorLight.x, colorLight.y, colorLight.z);
 					glBegin(GL_POINTS);
-						glVertex3f(ray.origin.x + t*ray.direction.x, 
-							ray.origin.y + t*ray.direction.y, 
+						glVertex3f(ray.origin.x + t*ray.direction.x,
+							ray.origin.y + t*ray.direction.y,
 							ray.origin.z + t*ray.direction.z);
 					glEnd();
 					// glutSwapBuffers();
 
-			}else if(index <0){
-				t = pla_objects[0].intersectPlane(ray);
-				// printf("t: %f\n",t);
-
-				// printf("Plane t: %f\n", t);
-				countP++;
-				vec3 colorLight = tracePlane(ray, pla_objects[0], light_object[0]);
-				// printf(" PLANE R: %f, PLANE G: %f, PLANE B: %f\n", colorLight.x, colorLight.y, colorLight.z);
-				glColor3f(colorLight.x, colorLight.y, colorLight.z);
-				// glEnable(GL_CULL_FACE);
-				// glCullFace(GL_FRONT);
-				
-					// glTranslatef(0.0, 0.0, 0.046);
-					
-					glBegin(GL_POINTS);
-						glVertex3f(ray.origin.x + t*ray.direction.x , 
-							ray.origin.y + t*ray.direction.y , 
-							ray.origin.z + t*ray.direction.z );
-					glEnd();
-				
-				// glFlush();
-				
 			}
-			// for(int i =0 ; i< 2; i++){
-			// 	tS = sph_objects[i].intersect(ray);
-			// 	if(tS != -1){
-			// 		t = tS;
-			// 		countS++;
-			// 		vec3 colorLight = trace(ray, sph_objects[i], light_object[0]);
-			// 		glColor3f(colorLight.x, colorLight.y, colorLight.z);
-						
-			// 		glBegin(GL_POINTS);
-			// 			glVertex3f(ray.origin.x + t*ray.direction.x , 
-			// 				ray.origin.y + t*ray.direction.y , 
-			// 				ray.origin.z + t*ray.direction.z );
-			// 		glEnd();
-			// 		glutSwapBuffers();
+			else if(index <0){
+				t = pla_objects[0].intersectPlane(ray);
 
-			// 	}
-			// 	else{
-			// 		t = tP;
-			// 		// printf("Plane t: %f\n", t);
-			// 		countP++;
-			// 		vec3 colorLight = tracePlane(ray, pla_objects[0], light_object[0]);
-			// 		// printf(" PLANE R: %f, PLANE G: %f, PLANE B: %f\n", colorLight.x, colorLight.y, colorLight.z);
-			// 		glColor3f(colorLight.x, colorLight.y, colorLight.z);
-			// 		// glEnable(GL_CULL_FACE);
-			// 		// glCullFace(GL_FRONT);
-			// 		glPushMatrix();
-			// 			glTranslatef(0.0, 0.0, -2.45);
-						
-			// 			glBegin(GL_POINTS);
-			// 				glVertex3f(ray.origin.x + t*ray.direction.x , 
-			// 					ray.origin.y + t*ray.direction.y , 
-			// 					ray.origin.z + t*ray.direction.z );
-			// 			glEnd();
-			// 		glPopMatrix();
-			// 		// glutSwapBuffers();
-					
-			// 	}
-			// }
-				
+				countP++;
+				vec3 colorLight = tracePlane(ray, pla_objects[0], light_object[0], rayDepth);
+				glColor3f(colorLight.x, colorLight.y, colorLight.z);
 
-			
+				glBegin(GL_POINTS);
+					glVertex3f(ray.origin.x + t*ray.direction.x,
+						ray.origin.y + t*ray.direction.y ,
+						ray.origin.z + t*ray.direction.z );
+				glEnd();
 
-			// if(tS != -1 && tP != -1){ // Hit the sphere
-				// glColor3f(sph_objects[0].mat.ksColor.x, sph_objects[0].mat.ksColor.y, sph_objects[0].mat.ksColor.z);
-				// glColor3f(1.0, 0.5, 1.0);
-				// t = tS;
-				// if(tS < tP){
-				// 	t = tS;
-				// 	countS++;
-				// 	vec3 colorLight = trace(ray, sph_objects[0], light_object[0]);
-				// 	// printf(" R: %f, G: %f, B: %f\n", colorLight.x, colorLight.y, colorLight.z);
-				// 	// if(t != -1){
-				// 	// 	glColor3f(colorLight.x, colorLight.y, colorLight.z);
-				// 	// }else{
-				// 	// 	glColor3f(0.0, 0.0, 0.0);
-				// 	// }
-				// 	// glEnable(GL_CULL_FACE);
-				// 	// glCullFace(GL_FRONT);
-				// 	glColor3f(colorLight.x, colorLight.y, colorLight.z);
-					
-				// 	glBegin(GL_POINTS);
-				// 		glVertex3f(ray.origin.x + t*ray.direction.x , 
-				// 			ray.origin.y + t*ray.direction.y , 
-				// 			ray.origin.z + t*ray.direction.z );
-				// 	glEnd();
-				// }
-				// else if(yN < (400*LIMIT*LIMIT*25)/2){
-				// 	t = tP;
-				// 	countP++;
-				// 	vec3 colorLight = tracePlane(ray, pla_objects[0], light_object[0]);
-				// 	printf(" PLANE R: %f, PLANE G: %f, PLANE B: %f\n", colorLight.x, colorLight.y, colorLight.z);
-				// 	glColor3f(colorLight.x, colorLight.y, colorLight.z);
-				// 	// glEnable(GL_CULL_FACE);
-				// 	// glCullFace(GL_FRONT);
-					
-				// 	glBegin(GL_POINTS);
-				// 		glVertex3f(ray.origin.x + t*ray.direction.x , 
-				// 			ray.origin.y + t*ray.direction.y , 
-				// 			ray.origin.z + t*ray.direction.z );
-				// 	glEnd();
-				// }
-			// }
-			// else {
-			// 	t = pla_objects[0].intersectPlane(ray);
-			// 	countP++;
-			// 	vec3 colorLight = tracePlane(ray, pla_objects[0], light_object[0]);
-			// 	printf(" PLANE R: %f, PLANE G: %f, PLANE B: %f\n", colorLight.x, colorLight.y, colorLight.z);
-			// 	glColor3f(colorLight.x, colorLight.y, colorLight.z);
-			// 	// glEnable(GL_CULL_FACE);
-			// 	// glCullFace(GL_FRONT);
-				
-			// 	glBegin(GL_POINTS);
-			// 		glVertex3f(ray.origin.x + t*ray.direction.x , 
-			// 			ray.origin.y + t*ray.direction.y , 
-			// 			ray.origin.z + t*ray.direction.z );
-			// 	glEnd();
-			// }
-
-			// else{
-			// 	glColor3f(0.0,0.0,0.0);
-			// 	glBegin(GL_POINTS);
-			// 		glVertex3f(ray.origin.x + t*ray.direction.x , 
-			// 			ray.origin.y + t*ray.direction.y , 
-			// 			ray.origin.z + t*ray.direction.z );
-			// 	glEnd();
-			// }
-			
-			// if(t != -1){
-				
-			// }
-			// vec3 kd = shadingSphere(ray, sph_objects[0]);
-			// sph_objects[0].mat.kdColor = kd;
-			// sph_objects[0].draw();
+			}
 		}
 	}
 	printf("countS: %d\n", countS);
@@ -472,10 +301,10 @@ void render(){
 }
 
 void init(){
-	
-    glViewport(0, 0, WINDOW, WINDOW);
 
-    glClearColor(backColor.x, backColor.y, backColor.z, 0.0);
+  glViewport(0, 0, WINDOW, WINDOW);
+
+  glClearColor(backColor.x, backColor.y, backColor.z, 0.0);
 	glEnable(GL_DEPTH_TEST);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -483,8 +312,6 @@ void init(){
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	gluLookAt(0.0, 0.0, 0.0, 0.0, 0.0, -1.0, 0.0, 1.0, 0.0);
-	// glOrtho(-100.0, 100.0, -100.0,100.0,-5.0,20.0);
-	// glLoadIdentity();
 }
 
 
@@ -494,54 +321,44 @@ void callbackDisplay() {
 	glEnable(GL_DEPTH);
 	glMatrixMode(GL_MODELVIEW);
 
-	// glPushMatrix();
-		
-	// glPopMatrix();
-	// glPushMatrix();
-		// glLoadIdentity();
 
-	vec3 lightPos(0.0, 0.0, 0.0);
-	vec3 lightColor(5.0, 5.0, 5.0);
-	Light light(lightPos, lightColor);
-	light_object[0] = light;
 
-	
+	vec3 center_ball1(0.0, -0.2, -10.0);
+	vec3 center_ball2(1.0,0.0,-12.0);
+	vec3 center_ball3(3.0, 0.3, -15.0);
 
-	
-// glPopMatrix();
-	vec3 center_ball1(-1.0, 0.5, -20.0);
-	vec3 center_ball2(-3.0,1.5,-20.0);
-	vec3 center_ball3(1.0, 1.0, -15.0);
-
-	float radius_ball1 = 1.5;
-	float radius_ball2 = 2.0;
-	float radius_ball3 = 2.0;
+	float radius_ball1 = 0.75;
+	float radius_ball2 = 1.0;
+	float radius_ball3 = 1.5;
 
 	//Setting up the material
-	Material Blue = Material(vec3(0.0, 0.651, 0.851), vec3(1.0, 1.0, 1.0),24, 0.5f, 0.0f, 1.5f);
+	Material Yellow = Material(vec3(0.93, 1.0, 0.0), vec3(1.0, 1.0, 1.0),128, 1.0f, 0.0f, 1.52);
 
-	Material DarkRed = Material(vec3(0.502, 0.0353, 0.0353), vec3(1.0, 1.0, 1.0),47, 0.5f, 0.0f, 1.5f);
+	Material DarkRed = Material(vec3(0.502, 0.0353, 0.0353), vec3(1.0, 1.0, 1.0),80, 1.0f, 0.0f, 1.33);
 
-	Material Orange = Material(vec3(0.9804, 0.4588, 0.0), vec3(1.0, 1.0, 1.0),90, 0.5f, 0.0f, 1.5f);
+	Material Purple = Material(vec3(0.4314, 0.0589, 0.6196), vec3(1.0, 1.0, 1.0),50, 1.0f, 0.0f, 1.5);
 
-	Material PlaneMaterial = Material(vec3(0.0, 1.0, 1.0), vec3(0.0, 1.0, 1.0), 5.0, 1.0f, 0.0f, 1.5f);
-
-	Sphere ball1(center_ball1, radius_ball1, Blue);
+	Sphere ball3(center_ball3, radius_ball3, Purple);
 	Sphere ball2(center_ball2, radius_ball2, DarkRed);
-	Sphere ball3(center_ball3, radius_ball3, Orange);
+	Sphere ball1(center_ball1, radius_ball1, Yellow);
 
 	sph_objects[0] = ball1;
 	sph_objects[1] = ball2;
 	sph_objects[2] = ball3;
 
-
-
-
-	Plane plane(0, 0, 1, -1, PlaneMaterial);
+	//Setting up the Plane
+	Material PlaneMaterial = Material(vec3(0.0, 1.0, 1.0), vec3(1.0, 1.0, 1.0), 5.0, 1.0f, 0.0f, 1.31);
+	Plane plane(0, 0, 1, -5, PlaneMaterial);
 	pla_objects[0] = plane;
-	
+
+
+	//Setting up the Light
+	vec3 lightPos(0.0, 0.0, -1.0);
+	vec3 lightColor(0.5, 0.5, 0.5);//Ambient Light Color
+	Light light(lightPos, lightColor);
+	light_object[0] = light;
+
 	render();
-	// glFlush();
 	glutSwapBuffers();
 
 }
@@ -552,19 +369,15 @@ int main(int argc, char **argv) {
 
 	// init GLUT and create Window
 	glutInit(&argc, argv);
-	// glutInitDisplayMode( GLUT_SINGLE | GLUT_RGB);
-	glutInitDisplayMode( GLUT_DOUBLE | GLUT_RGB | GLUT_DEPTH);
+	glutInitDisplayMode( GLUT_SINGLE | GLUT_RGB | GLUT_DEPTH);
 	glutInitWindowPosition(1080, 450);
 	glutInitWindowSize(WINDOW, WINDOW);
 	glutCreateWindow("Ray Tracer");
 
 	init();
 	// register callbacks
+	setRayDepth(4);
 	glutDisplayFunc(callbackDisplay);
-
-	// glutSpecialFunc(specialKeyboard);
-		//glutKeyboardFunc(keyboard);
-	// glutMouseFunc( mouse );
 
 	// enter GLUT event processing cycle
 	// glutSwapBuffers();

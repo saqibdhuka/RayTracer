@@ -1,7 +1,6 @@
 #ifndef LIGHT_H
 #define LIGHT_H
 
-#include <GL/glew.h>
 #include <GL/gl.h>
 #include <GL/freeglut.h>
 #include <GL/glut.h>
@@ -21,7 +20,7 @@ public:
 
 	Light();
 	Light(vec3 position, vec3 c);
-	
+
 };
 
 

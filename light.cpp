@@ -1,4 +1,3 @@
-#include <GL/glew.h>
 #include <GL/gl.h>
 #include <GL/freeglut.h>
 #include <GL/glut.h>
@@ -26,10 +25,9 @@ Light :: Light(vec3 position, vec3 c){
 	origin.x = position.x;
 	origin.y = position.y;
 	origin.z = position.z;
-	
+
 	colorIntensity.x = c.x;
 	colorIntensity.y = c.y;
 	colorIntensity.z = c.z;
 
 }
-

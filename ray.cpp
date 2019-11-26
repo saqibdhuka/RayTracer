@@ -1,5 +1,4 @@
 #include "ray.h"
-#include <GL/glew.h>
 #include <GL/gl.h>
 #include <GL/freeglut.h>
 #include <GL/glut.h>
@@ -30,14 +29,14 @@ Ray :: Ray(vec3 o, vec3 d){
 
 void Ray::shootRay(const float &t){
 
-	
+
 	glBegin(GL_LINES);
 		glVertex3f(origin.x, origin.y, origin.z);
-		glVertex3f(origin.x + (t * direction.x), 
-				   origin.y + (t * direction.y), 
+		glVertex3f(origin.x + (t * direction.x),
+				   origin.y + (t * direction.y),
 				   origin.z + (t * direction.z));
 	glEnd();
 
-	
+
 
 }

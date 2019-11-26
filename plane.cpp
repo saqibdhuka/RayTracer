@@ -1,5 +1,4 @@
 #include "plane.h"
-#include <GL/glew.h>
 #include <GL/gl.h>
 #include <GL/freeglut.h>
 #include <GL/glut.h>
@@ -15,7 +14,7 @@ Plane :: Plane(){
 	B = 0.0;
 	C = 0.0;
 	D = 0.0;
-	
+
 	matPlane.kdColor.x = 0.0;
 	matPlane.kdColor.y = 0.0;
 	matPlane.kdColor.z = 0.0;
@@ -79,4 +78,3 @@ float Plane :: intersectPlane(Ray &ray){
 	}
 
 }
-
