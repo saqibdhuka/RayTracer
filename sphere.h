@@ -39,7 +39,7 @@ public:
 	Sphere(vec3 point, float rad, Material newMat);
 	vec3 getkdColor();
 	void draw();
-	float intersect(const Ray &ray);
+	double intersect(const Ray &ray);
 	vec3 get_normal(vec3 rayOrigin);
 };
 

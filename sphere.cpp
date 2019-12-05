@@ -66,17 +66,17 @@ vec3 Sphere::getkdColor(){
 	return mat.kdColor;
 }
 
-float Sphere :: intersect(const Ray &ray){
+double Sphere :: intersect(const Ray &ray){
 
-	float t;
+	double t;
 	vec3 p_to_c = ray.origin - center;
-	float a = dot(ray.direction, ray.direction);
-	float b = 2.0 * dot(p_to_c, ray.direction);
-	float c = dot(p_to_c, p_to_c) - radius * radius;
-	float discriminant = (b * b) - (4 * a * c); // b^2 - 4ac
+	double a = dot(ray.direction, ray.direction);
+	double b = 2.0 * dot(p_to_c, ray.direction);
+	double c = dot(p_to_c, p_to_c) - radius * radius;
+	double discriminant = (b * b) - (4 * a * c); // b^2 - 4ac
 
-	float t1 = (-b - sqrt(discriminant)) / (2*a);
-	float t2 = (-b + sqrt(discriminant)) / (2*a);
+	double t1 = (-b - sqrt(discriminant)) / (2*a);
+	double t2 = (-b + sqrt(discriminant)) / (2*a);
 
 	if(t1 < t2)
 		t = t1;
@@ -97,6 +97,6 @@ float Sphere :: intersect(const Ray &ray){
 vec3 Sphere :: get_normal(vec3 point){
 
 	vec3 rc(point - center);
-
+	
 	return rc;
 }
